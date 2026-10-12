@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ExpenseMate - Premium Personal Finance and Expense Tracker Web Application. Track expenses, analyze spending with interactive charts, and manage monthly budgets.">
+    <meta name="keywords" content="expense tracker, personal finance, budget planner, expense manager, money tracker">
+    <title>ExpenseMate — Personal Finance & Expense Tracker</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Lucide via CDN or custom SVG helpers) -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>ExpenseMate</h2>
+                    <span class="brand-badge">PRO</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard" id="nav-dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect width="7" height="9" x="3" y="3" rx="1"/>
+                        <rect width="7" height="5" x="14" y="3" rx="1"/>
+                        <rect width="7" height="9" x="14" y="12" rx="1"/>
+                        <rect width="7" height="5" x="3" y="16" rx="1"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="transactions" id="nav-transactions">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 3h5v5M4 20L21 3m-7 18h7v-5M3 4l18 17"/>
+                    </svg>
+                    <span>Transactions</span>
+                </button>
+                <button class="nav-item" data-tab="analytics" id="nav-analytics">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83M22 12A10 10 0 0 0 12 2v10z"/>
+                    </svg>
+                    <span>Analytics & Reports</span>
+                </button>
+                <button class="nav-item" data-tab="budget" id="nav-budget">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/>
+                        <circle cx="12" cy="11" r="1"/>
+                    </svg>
+                    <span>Budget Planner</span>
+                </button>
+            </nav>
+
+            <!-- Quick Budget Summary in Sidebar -->
+            <div class="sidebar-budget-card">
+                <div class="budget-card-header">
+                    <span class="budget-label">Monthly Target</span>
+                    <span class="budget-pct" id="side-budget-pct">0%</span>
+                </div>
+                <div class="budget-bar-container">
+                    <div class="budget-bar" id="side-budget-bar" style="width: 0%"></div>
+                </div>
+                <div class="budget-values">
+                    <span id="side-spent-amount">₹0</span>
+                    <span class="text-muted">of</span>
+                    <span id="side-total-budget">₹0</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="user-pill clickable" id="userProfileBtn" title="Click to change your name" aria-label="Edit Profile">
+                    <div class="user-avatar" id="sidebarAvatar">JD</div>
+                    <div class="user-meta">
+                        <div class="user-name-row">
+                            <span class="user-name" id="sidebarUserName">John Doe</span>
+                            <svg class="edit-icon-mini" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <span class="user-role" id="sidebarUserRole">Personal Workspace</span>
+                    </div>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-toggle-btn" id="mobileToggle" aria-label="Toggle Menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="page-title" id="pageTitle">Financial Dashboard</h1>
+                        <p class="page-subtitle" id="pageSubtitle">Welcome, <span id="welcomeUserName" class="user-greeting-highlight">John Doe</span> — real-time overview of your finances</p>
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    <!-- Fixed INR Currency Badge -->
+                    <div class="inr-badge" title="Operating Currency: Indian Rupee (₹ INR)">
+                        <span class="inr-symbol">₹</span>
+                        <span class="inr-label">INR</span>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button class="icon-btn" id="themeToggle" title="Toggle Theme" aria-label="Toggle Dark/Light Mode">
+                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Direct Download Excel Sheet Button -->
+                    <button class="btn btn-secondary btn-excel" id="downloadExcelTopBtn" title="Download records in Excel sheet">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="8" y1="13" x2="16" y2="13"></line>
+                            <line x1="8" y1="17" x2="16" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span class="btn-text">Download Excel</span>
+                    </button>
+
+                    <!-- Add Transaction Primary Button -->
+                    <button class="btn btn-primary" id="openAddModalBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Add Transaction</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- TAB 1: DASHBOARD VIEW -->
+            <section class="tab-view active" id="view-dashboard">
+                <!-- Stat Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card balance-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Net Balance</span>
+                            <div class="stat-badge badge-neutral">Available</div>
+                        </div>
+                        <div class="stat-value" id="dashNetBalance">₹0.00</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext" id="dashSavingsRateText">Savings Rate: 0%</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card income-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Income</span>
+                            <div class="stat-icon-wrapper income-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                    <polyline points="17 6 23 6 23 12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value text-income" id="dashTotalIncome">₹0.00</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext" id="dashIncomeCount">0 deposits</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card expense-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Expenses</span>
+                            <div class="stat-icon-wrapper expense-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                    <polyline points="17 18 23 18 23 12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value text-expense" id="dashTotalExpense">₹0.00</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext" id="dashTodaySpent">Today: ₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card budget-status-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Monthly Budget</span>
+                            <span class="badge" id="dashBudgetBadge">Safe</span>
+                        </div>
+                        <div class="stat-value" id="dashBudgetRemaining">₹0.00</div>
+                        <div class="stat-footer">
+                            <span class="stat-subtext" id="dashBudgetDetail">0% of ₹0 limit used</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget Alert Banner (Dynamic) -->
+                <div class="budget-alert-banner hidden" id="budgetAlertBanner">
+                    <div class="alert-content">
+                        <div class="alert-icon" id="budgetAlertIcon">⚠️</div>
+                        <div class="alert-message">
+                            <strong id="budgetAlertTitle">Budget Alert</strong>
+                            <p id="budgetAlertDesc">You have utilized 85% of your monthly allowance.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-ghost" id="editBudgetQuickBtn">Adjust Budget</button>
+                </div>
+
+                <!-- Charts & Breakdown Grid -->
+                <div class="dashboard-grid">
+                    <!-- Left: Analytics Visuals -->
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Expense Breakdown by Category</h3>
+                                <p class="card-subtitle">Distribution of all expenses for the selected period</p>
+                            </div>
+                            <div class="chart-legend-tabs">
+                                <span class="chart-active-tag">Current Month</span>
+                            </div>
+                        </div>
+                        <div class="chart-container-split">
+                            <div class="donut-chart-wrapper">
+                                <canvas id="categoryDonutChart" width="240" height="240"></canvas>
+                                <div class="donut-center-info">
+                                    <span class="donut-center-label">Total Outflow</span>
+                                    <span class="donut-center-val" id="donutTotalVal">₹0</span>
+                                </div>
+                            </div>
+                            <div class="donut-legend-list" id="categoryLegendList">
+                                <!-- Dynamic items rendered here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Quick Spending Trend & Today's Overview -->
+                    <div class="card trend-card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Daily Spending Trend</h3>
+                                <p class="card-subtitle">Expenses over the past 7 days</p>
+                            </div>
+                        </div>
+                        <div class="bar-chart-wrapper">
+                            <canvas id="weeklyBarChart" width="340" height="190"></canvas>
+                        </div>
+                        <div class="spending-insights-row">
+                            <div class="insight-box">
+                                <span class="insight-label">Daily Average</span>
+                                <span class="insight-val" id="insightDailyAvg">₹0.00</span>
+                            </div>
+                            <div class="insight-box">
+                                <span class="insight-label">Top Category</span>
+                                <span class="insight-val highlight-cat" id="insightTopCat">—</span>
+                            </div>
+                            <div class="insight-box">
+                                <span class="insight-label">Peak Expense</span>
+                                <span class="insight-val" id="insightPeakExpense">₹0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions Section -->
+                <div class="card recent-transactions-card">
+                    <div class="card-header flex-between">
+                        <div>
+                            <h3 class="card-title">Recent Activity</h3>
+                            <p class="card-subtitle">Latest recorded transactions</p>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" id="viewAllTransBtn">
+                            View All Transactions
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="transactions-table-container">
+                        <table class="data-table" id="recentTable">
+                            <thead>
+                                <tr>
+                                    <th>Transaction</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Payment Method</th>
+                                    <th>Amount</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentTransactionsList">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: TRANSACTIONS LIST VIEW -->
+            <section class="tab-view" id="view-transactions">
+                <div class="card filter-card">
+                    <div class="filter-controls-grid">
+                        <!-- Search Input -->
+                        <div class="search-input-wrapper">
+                            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="transSearchInput" class="form-input search-input" placeholder="Search by description or merchant...">
+                        </div>
+
+                        <!-- Type Filter -->
+                        <div class="filter-group">
+                            <select id="transTypeFilter" class="form-select">
+                                <option value="ALL">All Types</option>
+                                <option value="EXPENSE">Expense Only</option>
+                                <option value="INCOME">Income Only</option>
+                            </select>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="filter-group">
+                            <select id="transCategoryFilter" class="form-select">
+                                <option value="ALL">All Categories</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Payment Method Filter -->
+                        <div class="filter-group">
+                            <select id="transPaymentFilter" class="form-select">
+                                <option value="ALL">All Payments</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Debit/Credit Card">Card</option>
+                                <option value="Net Banking">Net Banking</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Order -->
+                        <div class="filter-group">
+                            <select id="transSortOrder" class="form-select">
+                                <option value="date-desc">Newest First</option>
+                                <option value="date-asc">Oldest First</option>
+                                <option value="amount-desc">Highest Amount</option>
+                                <option value="amount-asc">Lowest Amount</option>
+                            </select>
+                        </div>
+
+                        <!-- Quick Export Filtered Excel Sheet -->
+                        <button class="btn btn-secondary btn-excel" id="exportFilteredExcelBtn" title="Download filtered records in Excel sheet">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="8" y1="13" x2="16" y2="13"></line>
+                                <line x1="8" y1="17" x2="16" y2="17"></line>
+                            </svg>
+                            <span>Excel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main Transactions Table -->
+                <div class="card">
+                    <div class="card-header flex-between">
+                        <div>
+                            <h3 class="card-title">Transaction Records</h3>
+                            <span class="text-muted" id="transCountLabel">Showing 0 transactions</span>
+                        </div>
+                        <div class="batch-totals">
+                            <span class="batch-badge batch-income" id="filteredIncomeTotal">+₹0.00</span>
+                            <span class="batch-badge batch-expense" id="filteredExpenseTotal">-₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="transactions-table-container">
+                        <table class="data-table" id="allTransactionsTable">
+                            <thead>
+                                <tr>
+                                    <th>Transaction</th>
+                                    <th>Category</th>
+                                    <th>Date</th>
+                                    <th>Payment Method</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allTransactionsList">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="empty-state hidden" id="transEmptyState">
+                        <div class="empty-icon">🔍</div>
+                        <h4>No transactions found</h4>
+                        <p>Try adjusting your search filters or click "Add Transaction" to create a new one.</p>
+                        <button class="btn btn-primary" id="emptyStateAddBtn">Add New Transaction</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: ANALYTICS & REPORTS VIEW -->
+            <section class="tab-view" id="view-analytics">
+                <div class="analytics-overview-grid">
+                    <div class="card metric-card">
+                        <div class="metric-icon metric-indigo">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 14 14"></polyline>
+                            </svg>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-title">Highest Spending Day</span>
+                            <h3 class="metric-val" id="analyticsHighestDay">—</h3>
+                            <span class="metric-desc" id="analyticsHighestDayAmount">₹0.00 spent</span>
+                        </div>
+                    </div>
+
+                    <div class="card metric-card">
+                        <div class="metric-icon metric-emerald">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-title">Primary Payment Mode</span>
+                            <h3 class="metric-val" id="analyticsPrimaryPayment">—</h3>
+                            <span class="metric-desc" id="analyticsPrimaryPaymentPct">0% of all expenses</span>
+                        </div>
+                    </div>
+
+                    <div class="card metric-card">
+                        <div class="metric-icon metric-rose">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                        <div class="metric-body">
+                            <span class="metric-title">Net Savings</span>
+                            <h3 class="metric-val" id="analyticsNetSavings">₹0.00</h3>
+                            <span class="metric-desc" id="analyticsSavingsPct">0% retained</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown Bars -->
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Category Spending Progress</h3>
+                                <p class="card-subtitle">Total volume and share of each expense category</p>
+                            </div>
+                        </div>
+                        <div class="category-bars-wrapper" id="categoryBarsList">
+                            <!-- Category bars populated here -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Payment Method Share</h3>
+                                <p class="card-subtitle">Spending breakdown across payment methods</p>
+                            </div>
+                        </div>
+                        <div class="payment-method-chart-wrapper">
+                            <canvas id="paymentMethodsChart" width="320" height="220"></canvas>
+                        </div>
+                        <div class="payment-badges-row" id="paymentBadgesRow">
+                            <!-- Injected badges -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: BUDGET PLANNER VIEW -->
+            <section class="tab-view" id="view-budget">
+                <div class="budget-hero-card">
+                    <div class="hero-left">
+                        <div class="badge badge-primary">Active Budget Plan</div>
+                        <h2 class="hero-budget-title">Monthly Budget Controller</h2>
+                        <p class="hero-budget-desc">Set limits, control spending thresholds, and receive proactive warnings when expenses hit 80% or exceed your allowance.</p>
+                        <div class="hero-budget-inputs">
+                            <div class="input-inline">
+                                <span class="currency-prefix" id="budgetPrefix">₹</span>
+                                <input type="number" id="budgetInputAmount" class="form-input budget-num-input" placeholder="e.g. 25000" min="0" step="100">
+                            </div>
+                            <button class="btn btn-primary" id="saveBudgetBtn">Update Monthly Budget</button>
+                        </div>
+                    </div>
+                    <div class="hero-right">
+                        <div class="budget-circular-display">
+                            <svg class="circular-chart" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle-fill" id="circularBudgetBar" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="circle-text">
+                                <span class="circle-pct" id="circleBudgetPct">0%</span>
+                                <span class="circle-sub">Used</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Budget Health & Rules</h3>
+                                <p class="card-subtitle">Automated threshold triggers</p>
+                            </div>
+                        </div>
+                        <div class="budget-thresholds-list">
+                            <div class="threshold-item">
+                                <div class="threshold-indicator status-safe"></div>
+                                <div class="threshold-info">
+                                    <strong>Healthy Zone (0% - 79%)</strong>
+                                    <p>Spending is well within planned parameters.</p>
+                                </div>
+                            </div>
+                            <div class="threshold-item">
+                                <div class="threshold-indicator status-warning"></div>
+                                <div class="threshold-info">
+                                    <strong>Caution Zone (80% - 99%)</strong>
+                                    <p>Amber alert displayed on topbar and dashboard.</p>
+                                </div>
+                            </div>
+                            <div class="threshold-item">
+                                <div class="threshold-indicator status-danger"></div>
+                                <div class="threshold-info">
+                                    <strong>Over-Budget (100%+)</strong>
+                                    <p>Critical limit reached. Further expenses will exceed savings goals.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h3 class="card-title">Category Recommended Caps</h3>
+                                <p class="card-subtitle">Based on standard 50/30/20 financial rule</p>
+                            </div>
+                        </div>
+                        <div class="category-caps-list" id="categoryCapsList">
+                            <!-- Dynamically generated based on total budget -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODAL: ADD / EDIT TRANSACTION -->
+    <div class="modal-backdrop hidden" id="transactionModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrapper">
+                    <div class="modal-icon" id="modalIcon">✍️</div>
+                    <h3 class="modal-title" id="modalTitle">New Transaction</h3>
+                </div>
+                <button class="modal-close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+            </div>
+
+            <form id="transactionForm" novalidate>
+                <input type="hidden" id="editTransactionId">
+
+                <!-- Type Selector (Expense vs Income) -->
+                <div class="form-group">
+                    <label class="form-label">Transaction Type</label>
+                    <div class="type-segmented-control">
+                        <label class="type-segment expense-active">
+                            <input type="radio" name="transType" value="EXPENSE" checked>
+                            <span class="segment-pill">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Expense
+                            </span>
+                        </label>
+                        <label class="type-segment">
+                            <input type="radio" name="transType" value="INCOME">
+                            <span class="segment-pill">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                Income
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Amount Input -->
+                <div class="form-group">
+                    <label class="form-label" for="transAmount">Amount <span class="required">*</span></label>
+                    <div class="input-with-affix">
+                        <span class="input-affix" id="modalCurrencyAffix">₹</span>
+                        <input type="number" id="transAmount" class="form-input text-lg font-bold" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                    <span class="form-error" id="amountError">Please enter a valid amount greater than 0</span>
+                </div>
+
+                <!-- Description Input -->
+                <div class="form-group">
+                    <label class="form-label" for="transDescription">Description / Note <span class="required">*</span></label>
+                    <input type="text" id="transDescription" class="form-input" placeholder="e.g. Grocery shopping, Electricity bill, Freelance" required>
+                    <span class="form-error" id="descError">Description is required</span>
+                </div>
+
+                <!-- Category & Payment Method in 2 Columns -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="transCategory">Category <span class="required">*</span></label>
+                        <select id="transCategory" class="form-select" required>
+                            <!-- Populated dynamically according to type -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="transPaymentMethod">Payment Method</label>
+                        <select id="transPaymentMethod" class="form-select">
+                            <option value="UPI">UPI</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Debit/Credit Card">Debit/Credit Card</option>
+                            <option value="Net Banking">Net Banking</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Date -->
+                <div class="form-group">
+                    <label class="form-label" for="transDate">Date</label>
+                    <input type="date" id="transDate" class="form-input" required>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveTransactionBtn">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: EDIT USER PROFILE -->
+    <div class="modal-backdrop hidden" id="profileModal">
+        <div class="modal-card modal-sm">
+            <div class="modal-header">
+                <div class="modal-title-wrapper">
+                    <div class="modal-icon">👤</div>
+                    <h3 class="modal-title">Edit User Profile</h3>
+                </div>
+                <button class="modal-close-btn" id="closeProfileModalBtn" aria-label="Close modal">&times;</button>
+            </div>
+            <form id="profileForm" novalidate>
+                <div class="avatar-preview-box">
+                    <div class="user-avatar avatar-lg" id="profileAvatarPreview">JD</div>
+                    <div class="avatar-meta-hint">
+                        <span class="hint-title">Profile Initials</span>
+                        <span class="hint-desc">Dynamically generated from your name</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="profileNameInput">Full Name <span class="required">*</span></label>
+                    <input type="text" id="profileNameInput" class="form-input" placeholder="e.g. Raj Bhere" required maxlength="40">
+                    <span class="form-error" id="profileNameError">Please enter your name</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="profileRoleInput">Workspace Tagline / Status</label>
+                    <input type="text" id="profileRoleInput" class="form-input" placeholder="e.g. Personal Workspace, Student, Freelancer" maxlength="40">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelProfileBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: DELETE CONFIRMATION -->
+    <div class="modal-backdrop hidden" id="deleteConfirmModal">
+        <div class="modal-card modal-sm">
+            <div class="modal-header">
+                <div class="modal-title-wrapper">
+                    <div class="modal-icon text-danger">🗑️</div>
+                    <h3 class="modal-title">Delete Transaction?</h3>
+                </div>
+                <button class="modal-close-btn" id="closeDeleteModalBtn">&times;</button>
+            </div>
+            <p class="text-muted" id="deleteModalText">Are you sure you want to delete this transaction? This action cannot be undone.</p>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelDeleteBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
